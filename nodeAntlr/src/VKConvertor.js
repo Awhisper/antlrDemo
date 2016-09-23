@@ -2,7 +2,7 @@ var VKConvertor = function() {
 
 }
 
-VKConvertor.Convert = function(content){
+VKConvertor.Convert = function(content,callback){
 
     var antlr4 = require('.././antlr4/index');
     var ObjCLexer = require('.././antlrLib/ObjectiveCLexer').ObjectiveCLexer
@@ -21,8 +21,9 @@ VKConvertor.Convert = function(content){
     parser.buildParseTrees = true;
     var tree = parser.translationUnit();
 
-    var listener = new VKObjCParserListener(function(result){
+    var listener = new VKObjCParserListener(function(tree){
             console.log('parse final!!!!');
+            callback(tree);
     });
         
     try {
@@ -31,7 +32,7 @@ VKConvertor.Convert = function(content){
         console.log('listener error')
         console.log(e)
     }
-    return content;
+    
 }
 
 exports.VKConvertor = VKConvertor;
