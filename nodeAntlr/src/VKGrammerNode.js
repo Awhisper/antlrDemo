@@ -45,10 +45,37 @@ VKCommonNode.prototype.parse = function() {
 
 
 
-/////////////////JPClassContext
+var VKRootNode = function(){
+	this.requires = [];
+	this.classes = {};
+	this.protocols = {};
+	this.declarations = {};
+	
+}
+VKRootNode.prototype = Object.create(VKGrammerNode.prototype);
+VKRootNode.prototype.parse = function(){
+	var script = '';
+
+	for (var key in this.classes) {
+		var classNode = this.classes[key];
+		if (classNode){
+			script += classNode.parse();
+			script += '\n';
+		}
+	}
+	return script;
+}
+
+VKRootNode.prototype.enterClass = function(className){
+	if (!this.classes[className]){
+		this.classes[className] = new VKClassNode(className);
+	}
+	return this.classes[className];
+}
 
 var VKClassNode = function(className) {
 	this.className = className;
+	this.classPropertys = [];
 	this.instanceMethods = [];
 	this.classMethods = [];
 	this.ignore = 0;
@@ -214,6 +241,6 @@ exports.VKCommonNode = VKCommonNode;
 // exports.JPAssignContext = JPAssignContext;
 // exports.JPAssignLeftContext = JPAssignLeftContext;
 // exports.JPAssignRightContext = JPAssignRightContext;
-// exports.JPDeclarationContext = JPDeclarationContext;
+exports.VKRootNode = VKRootNode;
 exports.VKClassNode = VKClassNode;
 // exports.JPMethodContext = JPMethodContext;

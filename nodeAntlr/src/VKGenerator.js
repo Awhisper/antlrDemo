@@ -3,8 +3,10 @@ var VKGenerator = function() {
 }
 
 VKGenerator.Generate = function(node){
-    
-    return '';
+    var script = '';
+    script += node.parse();
+    console.log(script);
+    return script;
 }
 
 exports.VKGenerator = VKGenerator;

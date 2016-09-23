@@ -1,14 +1,20 @@
 
 var ObjectiveCParserListener = require('.././antlrLib/ObjectiveCParserListener').ObjectiveCParserListener
 
-var c = require('./VKGrammer')
+var c = require('./VKGrammerNode')
 var VKCommonNode = c.VKCommonNode,
-	VKClassNode = c.VKClassNode
+	VKClassNode = c.VKClassNode,
+    VKRootNode = c.VKRootNode
 
 
 var VKObjCParserListener = function(cb) {
 	ObjectiveCParserListener.call(this);
     this.callback = cb;
+
+    this.rootNode = new VKRootNode();
+
+	//Original Objective-C Script
+	this.ocScript = '';
 	return this;
 }
 
@@ -22,7 +28,7 @@ var VKLogContext = function(ctx){
 
 VKObjCParserListener.prototype.buildSource = function()
 {
-	this.cb(this.rootNode);
+	this.callback(this.rootNode);
 }
 
 VKObjCParserListener.prototype.addStrContext = function(stop) {
@@ -35,12 +41,13 @@ VKObjCParserListener.prototype.addStrContext = function(stop) {
 // Enter a parse tree produced by ObjectiveCParser#translationUnit.
 ObjectiveCParserListener.prototype.enterTranslationUnit = function(ctx) {
     console.log('start')
+    this.ocScript = ctx.start.source[1].strdata;
 };
 
 // Exit a parse tree produced by ObjectiveCParser#translationUnit.
 ObjectiveCParserListener.prototype.exitTranslationUnit = function(ctx) {
     console.log('end');
-    // this.buildScript();
+    this.buildSource();
 };
 
 
@@ -97,9 +104,10 @@ ObjectiveCParserListener.prototype.exitCategoryInterface = function(ctx) {
 // Enter a parse tree produced by ObjectiveCParser#classImplementation.
 ObjectiveCParserListener.prototype.enterClassImplementation = function(ctx) {
     VKLogContext(ctx);
-    // this.ocScript = ctx.start.source[1].strdata;
-	// this.currContext.className = ctx.children[1].start.text;
-	// this.currContext.ignore = this.ignoreClass;
+    
+	var className = ctx.children[1].start.text;
+    var classNode = this.rootNode.enterClass(className);
+    console.log('enter class')
 };
 
 // Exit a parse tree produced by ObjectiveCParser#classImplementation.
